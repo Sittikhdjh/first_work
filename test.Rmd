@@ -1,0 +1,159 @@
+---
+title: "R Introduction; data structure, data import and ouput"
+output: html_notebook
+---
+#Problem 1--------------------------------------------------------------
+```{r}
+#install R:
+```
+open an internet browser (in this part i choosed 'chrome') and go to Google.com
+type the words "download r" in the search engine (Google.com)
+click "Download R-3.5.1 for Windows. The R-project for statistical computing"
+click "Download R 3.5.1 for Windows"
+save on our computer, run the file and follow the installation instructions
+now R is installed
+```{r}
+#install Rstudio:
+```
+open an internet browser (in this part i choosed 'chrome') and go to *Google.com*
+type the words "download latest version of rstudio for windows" in the search engine (Google.com)
+click "Download Rstudio-Rstudio"
+click "Product" then click "download rstudio dekstop"
+click the latest windows version and save file to our computer, run the file and follow the installation instructions
+```{r}
+#install basic R packages:
+```
+install Rnotebook:
+click "file" -> "new file" -> "R Notebook"
+install quantmod:
+open RStudio
+install.packages("quantmod")
+
+#Problem 2--------------------------------------------------------------
+```{r}
+#STEP 1 Install or Load "quantmod" package
+#Get quantmod
+if (!require("quantmod")) {
+  install.packages("quantmod")
+  library(quantmod)
+}
+```
+```{r}
+#Let's get Apple stock data; Apple's ticker symbol is AAPL. We use the
+#quantmod function getSymbols, and pass a string as a first argument to
+#identify the desired ticker symbol, pass 'yahoo' to src for Yahoo!
+#Finance, and from and to specify date ranges
+```
+```{r}
+#The default behavior for getSymbols is to load data directly into the
+#global environment, with the object being named after the loaded ticker
+#symbol. This feature may become deprecated in the future, but we exploit
+#it now.
+```
+```{r}
+#STEP 2 Grab online "AAPL" dataset by using getSymbols()
+getSymbols("AAPL", src = "yahoo")
+```
+```{r}
+#STEP 2 Convert to dataframe
+load("C:/Users/sitti khadijah/Documents/homework1/AAPLkdj.Rda")
+df <- data.frame(Date=index(AAPL),coredata(AAPL))
+```
+```{r}
+#STEP 3 SAVE "AAPL" dataset to directory
+save(df,file="C:/Users/sitti khadijah/Documents/homework1/AAPLkdj.Rmd")
+```
+```{r}
+#STEP 4 Pick the value more than 200 select by AAPL.Open
+DF <- df[df$AAPL.Open>200,]
+```
+```{r}
+#STEP 5 Descending
+DF <- DF[with(DF, order(-DF$AAPL.Open)), ]
+```
+```{r}
+#STEP 6 Sort 1-10
+DF <- DF[order(1:10),]
+```
+```{r}
+#STEP 7 SAVE "RESULTS" to directory
+save(DF,file="C:/Users/sitti khadijah/Documents/homework1/AAPLkdj.Rmd")
+```
+```{r}
+print(DF)
+```
+#Problem 3--------------------------------------------------------------
+```{r}
+#STEP 1  attach the iris dataset to the environment
+data(iris)
+```
+```{r}
+# STEP 2 rename the dataset
+dt <- iris
+```
+```{r}
+# STEP 3 make a function for search and replace
+kdj <- function(Source, Search, Replace)
+{
+  if (length(Search) != length(Replace))
+    stop("Search and Replace Must Have Equal Number of Items\n")
+  
+  Changed <- as.character(Source)
+  
+  for (i in 1:length(Search))
+  {
+    cat("Replacing: ", Search[i], " With: ", Replace[i], "\n")
+    Changed <- replace(Changed, Changed == Search[i], Replace[i])
+  }
+  
+  cat("\n")
+  
+  Changed
+}
+```
+```{r}
+# STEP 4 Do search and replacement levels of ('setosa', 'versicolor', 'virginica') into three numbers(1, 2, 3).
+dt$Species <- as.numeric(kdj(dt$Species, 
+                             c("setosa", "versicolor", "virginica"), 
+                             c(1, 2, 3)))
+```
+```{r}
+# STEP 5 Summarize Dataset after replacement, with following
+```
+```{r}
+#1 Dimensions of the dataset.
+print(dim(dt))
+```
+```{r}
+#2 Types of the attributes.
+sapply(dt, class)
+```
+```{r}
+#3 Peek at the data itself.
+head(dt)
+```
+```{r}
+#4 Levels of the class attribute.
+levels(dt$Species)
+```
+```{r}
+#5 Breakdown of the instances in each class.
+percentage <- prop.table(table(dt$Species)) * 100
+cbind(freq=table(dt$Species), percentage=percentage)
+```
+```{r}
+#6 Statistical summary of all attributes.
+summary(dt)
+```
+```{r}
+# STEP 6 Visualize Dataset corresponding to Species variable after replacement
+# split input and output
+x <- dt[,1:4]
+y <- dt[,5]
+
+# boxplot for each attribute on one image
+par(mfrow=c(1,4))
+for(i in 1:4) {
+  boxplot(x[,i], main=names(iris)[i])
+}
+```
